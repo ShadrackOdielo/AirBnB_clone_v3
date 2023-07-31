@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 """
-contains the FileStorage class
+Contains the FileStorage class
 """
 
 import json
@@ -33,23 +33,6 @@ class FileStorage:
                     new_dict[key] = value
             return new_dict
         return self.__objects
-
-    def get(self, cls, id):
-        """retrieves an object of a class with id"""
-        if cls is not None:
-            res = list(
-                filter(
-                    lambda x: type(x) is cls and x.id == id,
-                    self.__objects.values()
-                )
-            )
-            if res:
-                return res[0]
-        return None
-
-    def count(self, cls=None):
-        """retrieves the number of objects of a class or all (if cls==None)"""
-        return len(self.all(cls))
 
     def new(self, obj):
         """sets in __objects the obj with key <obj class name>.id"""
@@ -85,3 +68,21 @@ class FileStorage:
     def close(self):
         """call reload() method for deserializing the JSON file to objects"""
         self.reload()
+
+    def get(self, cls, id):
+        """a method to retrieve one object"""
+        if cls is not None:
+            key = "{}.{}".format(cls.__name__, id)
+            return self.all(cls).get(key, None)
+        return None
+
+    def count(self, cls=None):
+        """a method to count the number of objects in storage"""
+        count = 0
+        if cls is None:
+            for k, v in self.all().items():
+                count += 1
+        else:
+            for k, v in self.all(cls).items():
+                count += 1
+        return count
